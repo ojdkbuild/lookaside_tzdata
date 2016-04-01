@@ -6,7 +6,7 @@
 PACKAGE=	tzcode
 
 # Version numbers of the code and data distributions.
-VERSION=	2013h
+VERSION=	2014b
 
 # Email address for bug reports.
 BUGEMAIL=	tz@iana.org
@@ -136,7 +136,7 @@ GCC_DEBUG_FLAGS = -Dlint -g3 -O3 -fno-common -fstrict-aliasing \
 	-Wbad-function-cast -Wcast-align -Wcast-qual \
 	-Wformat=2 -Winit-self \
 	-Wmissing-declarations -Wmissing-noreturn -Wmissing-prototypes \
-	-Wnested-externs \
+	-Wnested-externs -Wno-address -Wno-cast-qual \
 	-Wno-format-nonliteral -Wno-sign-compare -Wno-sign-conversion \
 	-Wno-type-limits \
 	-Wno-unused-parameter -Woverlength-strings -Wpointer-arith \
@@ -196,14 +196,6 @@ GCC_DEBUG_FLAGS = -Dlint -g3 -O3 -fno-common -fstrict-aliasing \
 # These functions may well disappear in future releases of the time
 # conversion package.
 #
-# If you'll never want to handle solar-time-based time zones, add
-#	-DNOSOLAR
-# to the end of the "CFLAGS=" line
-# (and comment out the "SDATA=" line below).
-# This reduces (slightly) the run-time data-space requirements of
-# the time conversion functions; it may reduce the acceptability of your system
-# to folks in oil- and cash-rich places.
-#
 # If you want to allocate state structures in localtime, add
 #	-DALL_STATE
 # to the end of the "CFLAGS=" line.  Storage is obtained by calling malloc.
@@ -254,14 +246,13 @@ AWK=		awk
 # is typically nicer if it works.
 KSHELL=		/bin/bash
 
-# The path where SGML DTDs are kept.
-# The default is appropriate for Ubuntu 12.10.
+# The path where SGML DTDs are kept and the catalog file(s) to use when
+# validating.  The default is appropriate for Ubuntu 13.10.
 SGML_TOPDIR= /usr
 SGML_DTDDIR= $(SGML_TOPDIR)/share/xml/w3c-sgml-lib/schema/dtd
 SGML_SEARCH_PATH= $(SGML_DTDDIR)/REC-html401-19991224
-
-# The catalog file(s) to use when validating.
-SGML_CATALOG_FILES= HTML4.cat
+SGML_CATALOG_FILES= \
+  $(SGML_TOPDIR)/share/doc/w3-recs/html/www.w3.org/TR/1999/REC-html401-19991224/HTML4.cat
 
 # The name, arguments and environment of a program to validate your web pages.
 # See <http://www.jclark.com/sp/> for a validator, and
@@ -327,11 +318,10 @@ PRIMARY_YDATA=	africa antarctica asia australasia \
 		europe northamerica southamerica
 YDATA=		$(PRIMARY_YDATA) pacificnew etcetera backward
 NDATA=		systemv factory
-SDATA=		solar87 solar88 solar89
-TDATA=		$(YDATA) $(NDATA) $(SDATA)
+TDATA=		$(YDATA) $(NDATA)
 TABDATA=	iso3166.tab zone.tab leapseconds
 LEAP_DEPS=	leapseconds.awk leap-seconds.list
-DATA=		$(YDATA) $(NDATA) $(SDATA) $(TABDATA) \
+DATA=		$(YDATA) $(NDATA) $(TABDATA) \
 			$(LEAP_DEPS) yearistype.sh
 WEB_PAGES=	tz-art.htm tz-link.htm
 AWK_SCRIPTS=	checktab.awk leapseconds.awk
